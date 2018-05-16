@@ -7,7 +7,7 @@ library(data.table)
 
 #### PARAMETERS ####
 INPUT_PATH <- "/Users/mollylewis/Documents/research/Projects/VOCAB_SEEDS/analyses/1_exploration/wiki." # path to the embedding models
-OUTPUT_PATH <- "word_dists_by_language.csv" # path to csv for writiing distances
+OUTPUT_PATH <- "word_dists_by_language.csv" # path to csv for writing distances
 GOOGLE_LANGS <- c("en", "en") # list of languages
 CRITICAL_WORDS <- c("apple", "dog", "banana") # list of words comparing across languages 
 
