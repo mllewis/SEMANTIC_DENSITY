@@ -1,0 +1,136 @@
+---
+title: Pairwise word distances and Pete's information density measure
+output:
+  html_document:
+    highlight: tango
+    toc: true
+    number_sections: false
+    theme: cerulean
+    toc_float: false
+    code_folding: hide
+---
+
+```{r setup, message = F, warning = F}
+library(knitr)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, cache = F, tidy = F)
+
+library(tidyverse)
+library(corrplot)
+library(feather)
+library(broom)
+
+theme_set(theme_classic(base_size = 10))
+```
+
+Comparision of pairwise distance measure using wikipedia fasttext models with bible and europarl words. Sample of 1000 bible/europarl words per language (varies by language).
+
+
+## Europarl vs. Bible pairwise distances
+```{r}
+euro_dists <- read_csv("europarl_distance_summaries.csv", 
+         col_names = c("n_words", "empirical_mean", "ci_lower", 
+"boot_mean", "ci_upper","median", "sd", "cv", "wiki_lang_code"))  %>%
+  select(wiki_lang_code, empirical_mean) %>%
+  rename(europarl_mean = empirical_mean)
+
+
+bible_dists <- read_csv("bible_distance_summaries.csv", 
+         col_names = c("n_words", "empirical_mean", "ci_lower", 
+"boot_mean", "ci_upper","median", "sd", "cv", "wiki_lang_code")) %>%
+  left_join(euro_dists)
+
+bible_dists  %>%
+  filter(!is.na(europarl_mean)) %>%
+  ggplot(aes(x = empirical_mean, y = europarl_mean)) +
+  ylab("Europarl mean distance") +
+  xlab("Bible mean distance") +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Pairwise distances and rhsw 
+### Europarl
+```{r}
+
+euro_dists <- read_csv("europarl_distance_summaries.csv", 
+         col_names = c("n_words", "empirical_mean", "ci_lower", 
+"boot_mean", "ci_upper","median", "sd", "cv", "wiki_lang_code"))
+
+df <- read_csv("../../data/information_density_from_pete.csv") %>%
+  left_join(euro_dists, by = c(`639-1` = "wiki_lang_code")) %>%
+  select(74, 63, 77:83, 84) %>%
+  filter(!is.na(empirical_mean))
+
+ggplot(df, aes(x = rhsw, y = empirical_mean)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+
+ggplot(df, aes(x = rhsw, y = cv)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+```
+
+### Bible{.tabset}
+#### All langs
+```{r}
+df <- read_csv("../../data/information_density_from_pete.csv") %>%
+  left_join(bible_dists, by = c(`639-1` = "wiki_lang_code")) %>%
+  select(74, 63, 77:83, 84, 85) %>%
+  filter(!is.na(empirical_mean))
+
+
+ggplot(df, aes(x = rhsw, y = empirical_mean)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+
+ggplot(df, aes(x = rhsw, y = cv)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+```
+
+#### Excluding outliers
+```{r}
+df %>%
+  filter( !( `639-1` %in% c("ja", "zh", "mr"))) %>%
+  ggplot( aes(x = rhsw, y = empirical_mean)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+
+df %>%
+  filter( !( `639-1` %in% c("ja", "zh", "mr"))) %>%
+  ggplot(aes(x = rhsw, y = cv)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+```
+
+#### Europarl langs only
+```{r}
+df %>%
+  filter(!is.na(europarl_mean)) %>%
+  ggplot( aes(x = rhsw, y = empirical_mean)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+
+
+df %>%
+  filter(!is.na(europarl_mean)) %>%
+  ggplot(aes(x = rhsw, y = cv)) +
+  geom_label(aes(label = `639-1`)) +
+  geom_smooth(method = "lm") +
+  theme_classic()
+```
+

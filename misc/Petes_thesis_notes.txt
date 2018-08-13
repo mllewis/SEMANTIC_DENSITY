@@ -1,0 +1,24 @@
+
+NOTES ON PETE'S THESIS
+- compare documents containing the same "information content"
+	*  Bible (214 languages from 29 language families)
+	*  New Testament (828 languages from 87 language families)
+	* European Parliamentary Proceedings from 1996 through 2011 (21 languages from 2 language families) 
+- measure information density using Huffman encoding - fewer bits, each bit contains more conceptual info (denser lang)
+- average across documewnts
+- normalize by english
+- information density measure corrrelated across documents
+- Information density -> higher mean distance in space, lower variability
+- also looked and speech rate:
+	* strong negative association between the information density rate and the speech information transfer rate:  informationally denser languages will tend toward faster speech information transfer rates due to their increased encoding efficiency.
+
+
+IN SUM: 
+* there is significant variation in languages rate of lexical information density
+* rate of information density is positively associated with the density the conceptual space 
+* rate of information density  negatively associated with the speech information transfer rate. 
+
+Three variables:
+	* Information density - Huffman encoding (encoding in speech)
+	* Conceptual density - mean distance in conceptual space (embedding models)
+	* speech information transfer rate. 
