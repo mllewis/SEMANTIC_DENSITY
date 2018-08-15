@@ -4,8 +4,8 @@ library(tidyboot)
 
 #### PARAMETERS ####
 PREFIX_PATH <- "file_prefixes.csv"
-DISTS_PATH <- "/Volumes/wilbur_the_great/density_models/bible_dists/" # path to csv for writing distances
-OUTPUT_PATH <- "bible_distance_summaries.csv"
+DISTS_PATH <- "/Volumes/wilbur_the_great/density_models/bible_dists/5000_words" # path to csv for writing distances
+OUTPUT_PATH <- "bible_distance_5000_summaries.csv"
 
 ###
 
@@ -13,14 +13,16 @@ get_dist_summaries <- function(target_lang, dist_path, out_file){
   
   print(target_lang)
   
-  dists <- read_csv(paste0(dist_path,"_", target_lang, ".csv"))
+  dists <- read_csv(paste0(dist_path,"_", target_lang, ".csv")) %>%
+    select(-language) %>%
+    gather()
   
-  dist_summaries <- dists %>%
-        tidyboot_mean(column = cos_dist, nboot = 10) %>%
-        mutate(median = median(dists$cos_dist),
-               sd = sd(dists$cos_dist),
-               cv = sd/mean,
-               wiki_lang_code = target_lang) 
+  dist_summaries <- data.frame(n_words = length(dists$value),
+                               mean = mean(dists$value),
+                               median = median(dists$value),
+                               sd = sd(dists$value),
+                               wiki_lang_code = target_lang)  %>%
+                          mutate(cv = mean/sd)
   
   write_csv(dist_summaries, out_file, append = TRUE)
   

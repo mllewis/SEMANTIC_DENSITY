@@ -18,6 +18,8 @@ europarl_files <- drive_find(pattern = "europarl_")
 all_files <- bind_rows(bible_files, europarl_files )
 file_prefixes <- unique(map(str_split(all_files$name, ".txt"), ~.[[1]]))
 
+file_prefixes <- unique(map(str_split(europarl_files$name, ".txt"), ~.[[1]]))
+
 # function for downloading file (overwrites exsiting file), then writing words to file
 get_words_from_model <- function(file_prefix, model_path, out_path){
   print(file_prefix)
