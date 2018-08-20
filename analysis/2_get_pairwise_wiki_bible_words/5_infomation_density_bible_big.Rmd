@@ -1,13 +1,13 @@
 ---
-title: Semantic Density and Pete's information density measure
+  title: Semantic Density and Pete's information density measure
 output:
-  html_document:
-    highlight: tango
-    toc: true
-    number_sections: true
-    theme: cerulean
-    toc_float: false
-    code_folding: hide
+html_document:
+highlight: tango
+toc: true
+number_sections: true
+theme: cerulean
+toc_float: false
+code_folding: hide
 fig_width: 2 
 fig_height: 1 
 ---
@@ -16,7 +16,7 @@ fig_height: 1
 library(knitr)
 
 opts_chunk$set(echo = T, message = F, warning = F, 
-               error = F, cache = F, tidy = F)
+error = F, cache = F, tidy = F)
 
 library(tidyverse)
 library(corrplot)
@@ -33,26 +33,26 @@ Comparision of pairwise distance measure using wikipedia fasttext models with bi
 
 ```{r}
 euro_dists <- read_csv("europarl_distance_summaries.csv", 
-         col_names = c("n_words", "empirical_mean", "ci_lower", 
+col_names = c("n_words", "empirical_mean", "ci_lower", 
 "boot_mean", "ci_upper","median", "sd", "cv", "wiki_lang_code"))  %>%
-  select(wiki_lang_code, empirical_mean, cv) %>%
-  rename(europarl_mean = empirical_mean,
-         europarl_cv = cv)
+select(wiki_lang_code, empirical_mean, cv) %>%
+rename(europarl_mean = empirical_mean,
+europarl_cv = cv)
 
 
 bible_dists <- read_csv("bible_distance_5000_summaries.csv", 
-         col_names = c("n_words", "empirical_mean",
-                       "sd", "cv", "wiki_lang_code"))  %>%
-  left_join(euro_dists)
+col_names = c("n_words", "empirical_mean",
+"sd", "cv", "wiki_lang_code"))  %>%
+left_join(euro_dists)
 
 
 bible_dists  %>%
-  filter(!is.na(europarl_mean)) %>%
-  ggplot(aes(x = empirical_mean, y = europarl_mean)) +
-  ylab("Europarl pairwise mean cosine distance") +
-  xlab("Bible pairwise mean cosine distance") +
-  geom_point() +
-  geom_smooth(method = "lm")
+filter(!is.na(europarl_mean)) %>%
+ggplot(aes(x = empirical_mean, y = europarl_mean)) +
+ylab("Europarl pairwise mean cosine distance") +
+xlab("Bible pairwise mean cosine distance") +
+geom_point() +
+geom_smooth(method = "lm")
 ```
 
 ## Pairwise distances and rhsw 
@@ -60,22 +60,22 @@ bible_dists  %>%
 ### Europarl
 ```{r}
 df <- read_csv("../../data/information_density_from_pete.csv") %>%
-  left_join(euro_dists, by = c(`639-1` = "wiki_lang_code")) %>%
-  select(74, 63, 77,78) %>%
-  filter(!`639-1` %in% c("vi", "yo"),
-         !is.na(europarl_mean))
+left_join(euro_dists, by = c(`639-1` = "wiki_lang_code")) %>%
+select(74, 63, 77,78) %>%
+filter(!`639-1` %in% c("vi", "yo"),
+!is.na(europarl_mean))
 
 ggplot(df, aes(x = rhsw, y = europarl_mean)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise mean cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise mean cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 ggplot(df, aes(x = rhsw, y = europarl_cv)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise coefficient of variation of cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise coefficient of variation of cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 ```
 
@@ -83,65 +83,65 @@ ggplot(df, aes(x = rhsw, y = europarl_cv)) +
 #### All langs
 ```{r}
 df <- read_csv("../../data/information_density_from_pete.csv") %>%
-  left_join(bible_dists, by = c(`639-1` = "wiki_lang_code")) %>%
-  select(74, 63, 77:81) %>%
-  filter(!is.na(empirical_mean)) %>%
-  filter(!`639-1` %in% c("vi", "yo"))
+left_join(bible_dists, by = c(`639-1` = "wiki_lang_code")) %>%
+select(74, 63, 77:81) %>%
+filter(!is.na(empirical_mean)) %>%
+filter(!`639-1` %in% c("vi", "yo"))
 
 ggplot(df, aes(x = rhsw, y = empirical_mean)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise mean cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise mean cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 
 ggplot(df, aes(x = rhsw, y = cv)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise coefficient of variation of cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise coefficient of variation of cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 ```
 
 #### Excluding outliers
 ```{r}
 df %>%
-  filter(!`639-1` %in% c("ja", "zh", "mr")) %>%
-  ggplot( aes(x = rhsw, y = empirical_mean)) +
-  geom_label(aes(label = `639-1`)) +
-   ylab("pairwise mean cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+filter(!`639-1` %in% c("ja", "zh", "mr")) %>%
+ggplot( aes(x = rhsw, y = empirical_mean)) +
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise mean cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 
 df %>%
-  filter( !( `639-1` %in% c("ja", "zh", "mr"))) %>%
-  ggplot(aes(x = rhsw, y = cv)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise coefficient of variation of cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+filter( !( `639-1` %in% c("ja", "zh", "mr"))) %>%
+ggplot(aes(x = rhsw, y = cv)) +
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise coefficient of variation of cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 ```
 
 #### Europarl langs only
 ```{r}
 df %>%
-  filter(!is.na(europarl_mean)) %>%
-  ggplot( aes(x = rhsw, y = empirical_mean)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise mean cosine distance") +
+filter(!is.na(europarl_mean)) %>%
+ggplot( aes(x = rhsw, y = empirical_mean)) +
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise mean cosine distance") +
 
-  geom_smooth(method = "lm") +
-  theme_classic()
+geom_smooth(method = "lm") +
+theme_classic()
 
 
 df %>%
-  filter(!is.na(europarl_mean)) %>%
-  ggplot(aes(x = rhsw, y = cv)) +
-  geom_label(aes(label = `639-1`)) +
-  ylab("pairwise coefficient of variation of cosine distance") +
-  geom_smooth(method = "lm") +
-  theme_classic()
+filter(!is.na(europarl_mean)) %>%
+ggplot(aes(x = rhsw, y = cv)) +
+geom_label(aes(label = `639-1`)) +
+ylab("pairwise coefficient of variation of cosine distance") +
+geom_smooth(method = "lm") +
+theme_classic()
 
 ```
 
@@ -162,5 +162,4 @@ knitr::include_graphics("misc/aceves_fig_2-3.png")
 ```{r, out.width = "400px"}
 knitr::include_graphics("misc/aceves_fig_2-4.png")
 ```
-
 
